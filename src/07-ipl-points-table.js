@@ -37,5 +37,99 @@
  *   // Sorted: CSK(3), RCB(1), MI(0)
  */
 export function iplPointsTable(matches) {
-  // Your code here
+    // Your code here
+    if (!Array.isArray(matches) || matches.length === 0) return [];
+
+    const accumulator = {};
+
+    matches.forEach((match) => {
+        const { team1, team2, result, winner } = match;
+
+        let team1Point, team2Point;
+
+        if (result === "tie" || result === "no_result") {
+            team1Point = 1;
+            team2Point = 1;
+        } else {
+            if (winner === team1) {
+                team1Point = 2;
+                team2Point = 0;
+            } else {
+                team1Point = 0;
+                team2Point = 2;
+            }
+        }
+
+        if (accumulator.hasOwnProperty(team1)) {
+            accumulator[team1].played++;
+            if (team1Point === 2) {
+                accumulator[team1].won++;
+            } else if (team1Point === 1 && result === "tie") {
+                accumulator[team1].tied++;
+            } else if (team1Point === 1 && result === "no_result") {
+                accumulator[team1].noResult++;
+            } else {
+                accumulator[team1].lost++;
+            }
+            accumulator[team1].points += team1Point;
+        } else {
+            const won = result === "win" && winner === team1 ? 1 : 0;
+            const lost = result === "win" && winner !== team1 ? 1 : 0;
+            const tied = team1Point === 1 && result === "tie" ? 1 : 0;
+            const noResult = team1Point === 1 && result === "no_result" ? 1 : 0;
+            accumulator[team1] = {
+                played: 1,
+                won,
+                lost,
+                tied,
+                noResult,
+                points: team1Point,
+            };
+        }
+
+        if (accumulator.hasOwnProperty(team2)) {
+            accumulator[team2].played++;
+            if (team2Point === 2) {
+                accumulator[team2].won++;
+            } else if (team2Point === 1 && result === "tie") {
+                accumulator[team2].tied++;
+            } else if (team2Point === 1 && result === "no_result") {
+                accumulator[team2].noResult++;
+            } else {
+                accumulator[team2].lost++;
+            }
+            accumulator[team2].points += team2Point;
+        } else {
+            const won = result === "win" && winner === team2 ? 1 : 0;
+            const lost = result === "win" && winner !== team2 ? 1 : 0;
+            const tied = team2Point === 1 && result === "tie" ? 1 : 0;
+            const noResult = team2Point === 1 && result === "no_result" ? 1 : 0;
+            accumulator[team2] = {
+                played: 1,
+                won,
+                lost,
+                tied,
+                noResult,
+                points: team2Point,
+            };
+        }
+    });
+
+    const accArray = Object.entries(accumulator)
+        .map((team) => {
+            const [teamName, stats] = team;
+
+            return {
+                ...stats,
+                team: teamName,
+            };
+        })
+        .sort((a, b) => {
+            if (a.points !== b.points) {
+                return b.points - a.points;
+            }
+            return a.team.localeCompare(b.team);
+        });
+
+    return accArray;
 }

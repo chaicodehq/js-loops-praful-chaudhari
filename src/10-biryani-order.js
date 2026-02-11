@@ -34,5 +34,31 @@
  *   // => { totalBatches: 3, totalPlates: 15, ordersProcessed: 2 }
  */
 export function biryaniBatchProcessor(orders) {
-  // Your code here
+    // Your code here
+    if (!Array.isArray(orders) || orders.length === 0)
+        return { totalBatches: 0, totalPlates: 0, ordersProcessed: 0 };
+
+    let totalBatches = 0,
+        totalPlates = 0,
+        ordersProcessed = 0;
+
+    let orderNum = -1;
+
+    do {
+        orderNum++;
+        const order = orders[orderNum];
+        if (typeof order !== "number" || !Number.isInteger(order) || order <= 0)
+            continue;
+
+        if (order > 5) {
+            totalBatches += parseInt(order / 5);
+            if (order % 5 !== 0) totalBatches++;
+        } else {
+            totalBatches++;
+        }
+        totalPlates += order;
+        ordersProcessed++;
+    } while (orderNum < orders.length);
+
+    return { totalBatches, totalPlates, ordersProcessed };
 }
